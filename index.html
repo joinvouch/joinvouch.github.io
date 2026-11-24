@@ -1,0 +1,377 @@
+<!doctype html>
+<!-- Register your interest: a standalone page (with its share image and icons beside it) that saves to the Vouch database through
+     register_interest(). The key below is Supabase's publishable key, which is designed to be public: this page can
+     only add someone's details, never read the list. See the list in Supabase (Table Editor › interest). -->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vouch · Register your interest</title>
+<meta name="description" content="Invite-only dating for men, trans men and non-binary people across the UK. Register your interest and we’ll invite you when it opens.">
+<!-- How the link looks when shared (WhatsApp, iMessage, X, Facebook, LinkedIn): share.png, at the page's address
+     https://joinvouch.github.io (GitHub Pages, repository joinvouch/joinvouch.github.io). -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vouch">
+<meta property="og:title" content="Vouch · Register your interest">
+<meta property="og:description" content="Invite-only dating for men, trans men and non-binary people across the UK. Every member ID-checked and vouched for. Every connection starts with a voice.">
+<meta property="og:url" content="https://joinvouch.github.io/">
+<meta property="og:image" content="https://joinvouch.github.io/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="VOUCH. Every connection starts with a voice.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://joinvouch.github.io/share.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#EEF6F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141A17" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --paper: #EEF6F2; --card: #FAFDFB; --ink: #2E2810; --muted: #5C5843; --line: #D3E4DC;
+    --accent: #4B421B; --accent-ink: #D7EAE2; --warn: #B4461E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #141A17; --card: #1D2521; --ink: #D7EAE2; --muted: #9FB1A9; --line: #2D3934;
+            --accent: #D7EAE2; --accent-ink: #2E2810; --warn: #F0956B; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: Manrope, system-ui, sans-serif; }
+  body { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; padding: 0 16px; }
+  main { width: 100%; max-width: 420px; padding: max(48px, env(safe-area-inset-top)) 0 max(32px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 22px; }
+  /* The wordmark: Instrument Serif has one weight, so the heading must not be bold (the browser would fake it), and 18% letter spacing, as in the app. */
+  .wordmark { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: min(64px, 15vw); line-height: .9; letter-spacing: .18em; padding-left: .18em; margin: 0; text-align: center; }
+  .eyebrow { font: 500 10.5px 'JetBrains Mono', monospace; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); text-align: center; margin: 0; }
+  h2 { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 30px; line-height: 1.1; margin: 0; text-align: center; }
+  h2 em { font-style: italic; }
+  /* The rotating lines: each one blows in from the left as dust, forms, then blows out to the right. Edge to edge. */
+  .hero { position: relative; width: 100vw; margin-left: calc(50% - 50vw); height: 84px; }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  p { margin: 0; line-height: 1.5; }
+  .lede { color: var(--muted); font-size: 15px; text-align: center; }
+  form { display: flex; flex-direction: column; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+  label small { font-weight: 400; color: var(--muted); }
+  input, select { font: 500 16px Manrope, system-ui, sans-serif; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; appearance: none; }
+  select { background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+           background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 36px; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .consent { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 500; font-size: 13px; line-height: 1.45; color: var(--muted); }
+  .consent input { width: 20px; height: 20px; flex: none; margin: 1px 0 0; appearance: auto; accent-color: var(--accent); }
+  button { font: 700 15px Manrope, system-ui, sans-serif; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 999px; padding: 15px; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  .error { color: var(--warn); font-size: 13px; min-height: 1em; margin: -4px 0 0; }
+  .done { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .done .tick { font-size: 34px; color: var(--accent); }
+  .points { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+  .points li { display: flex; gap: 10px; align-items: baseline; }
+  .points li::before { content: '✦'; color: var(--accent); font-size: 11px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; }
+  [hidden] { display: none !important; }
+  /* Welcome in: a full-screen greeting with a microphone. Tapping it bursts the greeting into dust and reveals the page. */
+  .welcome { position: fixed; inset: 0; z-index: 10; }
+  .welcome canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .welcome button { position: absolute; width: 120px; height: 120px; border-radius: 50%; transform: translate(-50%, -50%); background: transparent; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .welcome button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+  body.welcoming { overflow: hidden; }
+  main:focus { outline: none; }
+</style>
+</head>
+<body class="welcoming">
+<div class="welcome" id="welcome">
+  <canvas id="welcome-canvas" aria-hidden="true"></canvas>
+  <h1 class="sr">Welcome in</h1>
+  <button id="welcome-mic" type="button" aria-label="Welcome in. Tap the microphone to come in"></button>
+</div>
+<main>
+  <div>
+    <h1 class="wordmark">VOUCH</h1>
+  </div>
+  <h2 class="hero"><span class="sr">Real people, real connections. Hear the person, not just the profile. Every connection starts with a voice.</span><canvas id="hero" aria-hidden="true"></canvas></h2>
+  <p class="lede">An invite-only dating app for men, trans men and non-binary people, where every member is vouched for by someone who knows them. Leave your details and we’ll invite you to sign up when we open.</p>
+
+  <ul class="points">
+    <li>Every member passes an ID check and is vouched for by friends</li>
+    <li>Conversations start with a voice, not just a profile</li>
+    <li>Places are limited each month</li>
+  </ul>
+
+  <form id="form" novalidate>
+    <label>Your first name
+      <input name="name" autocomplete="given-name" maxlength="60" required>
+    </label>
+    <label>Email
+      <input name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required>
+    </label>
+    <label>Instagram or phone <small>Optional</small>
+      <input name="contact" autocomplete="off" maxlength="60" placeholder="@yourname or 07…">
+    </label>
+    <label>Where do you live?
+      <select name="area" required>
+        <option value="" selected disabled>Choose your region</option>
+        <option>London</option>
+        <option>South East England</option>
+        <option>South West England</option>
+        <option>East of England</option>
+        <option>East Midlands</option>
+        <option>West Midlands</option>
+        <option>North West England</option>
+        <option>North East England</option>
+        <option>Yorkshire and the Humber</option>
+        <option>Scotland</option>
+        <option>Wales</option>
+        <option>Northern Ireland</option>
+        <option>Somewhere else</option>
+      </select>
+    </label>
+    <label class="consent"><input type="checkbox" name="consent" required>
+      <span>I’m happy for Vouch to contact me about joining. We only use your details for this, and you can ask us to delete them at any time.</span>
+    </label>
+    <p class="error" id="error" role="alert"></p>
+    <button id="send" type="submit">Register my interest</button>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <span class="tick">✓</span>
+    <h2>You’re on the list</h2>
+    <p class="lede">Thanks, <span id="who"></span>. We’ll email you an invite to sign up as soon as Vouch opens.</p>
+  </div>
+
+  <footer>© Vouch 2026</footer>
+</main>
+
+<script>
+  // The Vouch database (Supabase). The publishable key is public by design: it can only call register_interest.
+  const SUPABASE_URL = 'https://qkhnykxluieehapdsedl.supabase.co';
+  const PUBLISHABLE_KEY = 'sb_publishable_x5P4yNB16l2d_UGiGfPj0A_ebnCsJJD';
+
+  const form = document.getElementById('form'), error = document.getElementById('error'), send = document.getElementById('send');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(form));
+    const name = (f.name || '').trim(), email = (f.email || '').trim(), contact = (f.contact || '').trim(), area = f.area || '';
+    error.textContent = '';
+    if (!name) return error.textContent = 'Add your first name.';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return error.textContent = 'Add an email address we can reach you on.';
+    if (!area) return error.textContent = 'Choose where you live.';
+    if (!f.consent) return error.textContent = 'Tick the box so we can contact you when we open.';
+    send.disabled = true; send.textContent = 'Sending…';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_interest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: PUBLISHABLE_KEY },
+        body: JSON.stringify({ name, email, contact: contact || null, area }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || 'Something went wrong. Try again in a moment.');
+      }
+      document.getElementById('who').textContent = name;
+      form.hidden = true;
+      document.getElementById('done').hidden = false;
+    } catch (err) {
+      error.textContent = err.message === 'Failed to fetch' ? 'Couldn’t connect. Check your internet and try again.' : err.message;
+      send.disabled = false; send.textContent = 'Register my interest';
+    }
+  });
+</script>
+<script>
+  // The lines under the heading, one at a time: dust drifts in from the left edge, forms the line, holds, then drifts
+  // out to the right edge. Text colours come from the page's colours, so it follows light and dark mode.
+  (() => {
+    const LINES = [
+      [['Real people, real connections.', false]],
+      [['Hear the person, not just the profile.', false]],
+      [['Every connection starts with ', false], ['a voice.', true]],
+    ];
+    const SPECKS = { light: ['#4B421B', '#6B5F2A', '#8C7F45', '#A9C9BB', '#5E7A6E'], dark: ['#D7EAE2', '#F0DC9A', '#A9C9BB', '#5E7A6E', '#EEF6F2'] };
+    const PERIOD = 5000, FORM = 1700, OUT = 1700;   // ms: a line every 5 seconds
+    const canvas = document.getElementById('hero'), ctx = canvas.getContext('2d');
+    const dark = matchMedia('(prefers-color-scheme: dark)');
+    let W = 0, H = 0, dpr = 1, parts = [], text = null, index = -1, t0 = null;
+    const font = (em, size) => `${em ? 'italic ' : ''}400 ${size}px "Instrument Serif", Georgia, serif`;
+    const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const easeOut = k => 1 - Math.pow(1 - k, 3), easeIn = k => k * k * k;
+
+    // Lay a line out (wrapping onto two rows if it's too wide), draw it off-screen, and turn its pixels into dust.
+    function build(line) {
+      const maxW = Math.min(W - 32, 420), lh = 34;
+      const words = [];
+      line.forEach(([t, em]) => t.split(/(?<= )/).forEach(w => words.push([w, em])));
+      const o = document.createElement('canvas').getContext('2d');
+      // Shrink a long line a little to keep it on one row on a phone; only wrap if it would get too small.
+      const full = words.reduce((a, [w, em]) => { o.font = font(em, 30); return a + o.measureText(w).width; }, 0);
+      const size = full <= maxW ? 30 : Math.max(24, Math.floor(30 * maxW / full));
+      const rows = [[]]; let rowW = 0;
+      for (const [w, em] of words) {
+        o.font = font(em, size); const ww = o.measureText(w).width;
+        if (rowW + ww > maxW && rows[rows.length - 1].length) { rows.push([]); rowW = 0; }
+        rows[rows.length - 1].push([w, em, ww]); rowW += ww;
+      }
+      const off = document.createElement('canvas'); off.width = W * dpr; off.height = H * dpr;
+      const c = off.getContext('2d'); c.scale(dpr, dpr); c.textBaseline = 'middle';
+      const ink = cssVar('--ink'), accent = cssVar('--accent');
+      const top = H / 2 - (rows.length - 1) * lh / 2;
+      rows.forEach((row, i) => {
+        const total = row.reduce((a, [, , ww]) => a + ww, 0); let x = (W - total) / 2;
+        row.forEach(([w, em, ww]) => { c.font = font(em, size); c.fillStyle = em ? accent : ink; c.fillText(w, x, top + i * lh); x += ww; });
+      });
+      const data = c.getImageData(0, 0, off.width, off.height).data, step = Math.max(2, Math.round(2 * dpr)), out = [];
+      const specks = dark.matches ? SPECKS.dark : SPECKS.light;
+      for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+        const i = (y * off.width + x) * 4;
+        if (data[i + 3] > 128) {
+          const tx = x / dpr, ty = y / dpr;
+          out.push({ tx, ty, c: Math.random() < .7 ? `rgb(${data[i]},${data[i + 1]},${data[i + 2]})` : specks[Math.floor(Math.random() * specks.length)],
+            s: rnd(.9, 1.8),
+            sx: rnd(-W * .45, -10), sy: ty + rnd(-36, 36),            // starts off the left edge
+            ex: W + rnd(10, W * .45), ey: ty + rnd(-36, 36),          // leaves off the right edge
+            din: (tx / W) * 650 + rnd(0, 260), dout: (tx / W) * 520 + rnd(0, 240) });
+        }
+      }
+      parts = out; text = off;
+    }
+
+    function size() {
+      const r = canvas.getBoundingClientRect(); W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1);
+      canvas.width = W * dpr; canvas.height = H * dpr; index = -1;   // rebuild the current line at the new size
+    }
+
+    function frame(now) {
+      if (t0 == null) t0 = now;
+      const t = now - t0, n = Math.floor(t / PERIOD), k = t % PERIOD;
+      if (n !== index) { index = n; build(LINES[n % LINES.length]); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      const outAt = PERIOD - OUT, formed = Math.min(1, Math.max(0, (k - FORM + 350) / 350)), leaving = Math.min(1, Math.max(0, (k - outAt) / 250));
+      const crisp = formed * (1 - leaving);
+      // The finished line is drawn crisp; the dust fades out under it and back in when it leaves.
+      if (crisp > 0) { ctx.globalAlpha = crisp; ctx.drawImage(text, 0, 0, W, H); }
+      const dustA = 1 - crisp;
+      if (dustA > 0.01) for (const p of parts) {
+        let x, y, a;
+        if (k < outAt) {
+          const q = Math.min(1, Math.max(0, (k - p.din) / (FORM - 650))), e = easeOut(q);
+          x = p.sx + (p.tx - p.sx) * e; y = p.sy + (p.ty - p.sy) * e; a = Math.min(1, q * 2.2);
+        } else {
+          const q = Math.min(1, Math.max(0, (k - outAt - p.dout) / (OUT - 520))), e = easeIn(q);
+          x = p.tx + (p.ex - p.tx) * e; y = p.ty + (p.ey - p.ty) * e; a = 1 - q * q;
+        }
+        if (a <= 0) continue;
+        ctx.globalAlpha = a * dustA; ctx.fillStyle = p.c; ctx.fillRect(x, y, p.s, p.s);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(frame);
+    }
+
+    const start = () => { size(); requestAnimationFrame(frame); };
+    addEventListener('resize', size);
+    window.vouchHeroRestart = () => { t0 = null; index = -1; };   // the welcome screen starts the lines afresh when it clears
+    dark.addEventListener?.('change', () => { index = -1; });
+    (document.fonts?.load ? Promise.all([document.fonts.load('400 30px "Instrument Serif"'), document.fonts.load('italic 400 30px "Instrument Serif"')]).catch(() => {}) : Promise.resolve()).then(start);
+  })();
+</script>
+<script>
+  // Welcome in: the greeting and a breathing microphone, drawn on a canvas over the page. Tap the microphone (or press
+  // Enter) and everything on it bursts outwards as dust while the background fades, revealing the register page.
+  (() => {
+    const wrap = document.getElementById('welcome'), canvas = document.getElementById('welcome-canvas'), btn = document.getElementById('welcome-mic');
+    const ctx = canvas.getContext('2d'), dark = matchMedia('(prefers-color-scheme: dark)');
+    const SPECKS = { light: ['#4B421B', '#6B5F2A', '#8C7F45', '#A9C9BB', '#5E7A6E'], dark: ['#D7EAE2', '#F0DC9A', '#A9C9BB', '#5E7A6E', '#EEF6F2'] };
+    const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    let W, H, dpr, mic, burst = null, raf;
+
+    function size() {
+      W = innerWidth; H = innerHeight; dpr = Math.min(2, devicePixelRatio || 1);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      mic = { x: W / 2, y: H * .62, r: 40 };
+      btn.style.left = mic.x + 'px'; btn.style.top = mic.y + 'px';
+    }
+
+    // The greeting and the microphone (no background), so the same drawing can be turned into dust.
+    function drawGreeting(c, t) {
+      const ink = cssVar('--ink'), accent = cssVar('--accent'), accentInk = cssVar('--accent-ink'), muted = cssVar('--muted');
+      const size = Math.min(76, W * .17);
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.font = `400 ${size}px "Instrument Serif", Georgia, serif`;
+      const w1 = c.measureText('Welcome ').width; c.font = `italic 400 ${size}px "Instrument Serif", Georgia, serif`;
+      const w2 = c.measureText('in').width, x0 = W / 2 - (w1 + w2) / 2, y = H * .36;
+      c.textAlign = 'left'; c.fillStyle = ink; c.font = `400 ${size}px "Instrument Serif", Georgia, serif`; c.fillText('Welcome ', x0, y);
+      c.fillStyle = accent; c.font = `italic 400 ${size}px "Instrument Serif", Georgia, serif`; c.fillText('in', x0 + w1, y);
+      c.textAlign = 'center'; c.fillStyle = muted; c.font = '500 10.5px "JetBrains Mono", monospace';
+      c.letterSpacing = '1.4px'; c.fillText('VOUCH', W / 2, y - size * .85); c.letterSpacing = '0px';
+      // microphone
+      c.fillStyle = accent; c.beginPath(); c.arc(mic.x, mic.y, mic.r, 0, 6.283); c.fill();
+      const s = mic.r * .62; c.strokeStyle = accentInk; c.lineWidth = s * .12; c.lineCap = 'round';
+      c.beginPath(); c.roundRect(mic.x - s * .22, mic.y - s * .62, s * .44, s * .8, s * .22); c.stroke();
+      c.beginPath(); c.arc(mic.x, mic.y - s * .05, s * .42, .15 * Math.PI, .85 * Math.PI); c.stroke();
+      c.beginPath(); c.moveTo(mic.x, mic.y + s * .38); c.lineTo(mic.x, mic.y + s * .6); c.stroke();
+      c.fillStyle = muted; c.font = '600 13px Manrope, system-ui, sans-serif'; c.fillText('Tap the microphone to come in', W / 2, mic.y + mic.r + 46);
+    }
+
+    function idle(now) {
+      const specks = dark.matches ? SPECKS.dark : SPECKS.light;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1;
+      ctx.fillStyle = cssVar('--paper'); ctx.fillRect(0, 0, W, H);
+      // breathing rings and specks rising out of the microphone
+      const pulse = (now % 1800) / 1800;
+      ctx.fillStyle = cssVar('--accent');
+      ctx.globalAlpha = .10 * (1 - pulse); ctx.beginPath(); ctx.arc(mic.x, mic.y, mic.r * (1.15 + pulse * .7), 0, 6.283); ctx.fill();
+      ctx.globalAlpha = .08; ctx.beginPath(); ctx.arc(mic.x, mic.y, mic.r * 1.3, 0, 6.283); ctx.fill();
+      for (let i = 0; i < 28; i++) {
+        const ph = (now / 1700 + i / 28) % 1, x = mic.x + Math.sin(i * 12.9 + ph * 6) * 34 * ph, y = mic.y - mic.r - ph * 150;
+        ctx.globalAlpha = (1 - ph) * .75; ctx.fillStyle = specks[i % specks.length]; ctx.fillRect(x, y, 2, 2);
+      }
+      ctx.globalAlpha = 1; drawGreeting(ctx, now);
+      raf = requestAnimationFrame(idle);
+    }
+
+    // Turn the greeting into dust and blow it outwards from the microphone.
+    function go() {
+      if (burst) return;
+      cancelAnimationFrame(raf);
+      const off = document.createElement('canvas'); off.width = W * dpr; off.height = H * dpr;
+      const o = off.getContext('2d'); o.scale(dpr, dpr); drawGreeting(o, 0);
+      const d = o.getImageData(0, 0, off.width, off.height).data, step = Math.max(2, Math.round(2 * dpr)), parts = [];
+      const specks = dark.matches ? SPECKS.dark : SPECKS.light;
+      for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+        const i = (y * off.width + x) * 4; if (d[i + 3] < 120) continue;
+        const px = x / dpr, py = y / dpr, dx = px - mic.x, dy = py - mic.y, dist = Math.hypot(dx, dy) || 1;
+        const sp = (.35 + Math.random() * .75) * (1.4 - Math.min(1, dist / (H * .6)) * .6);
+        parts.push({ x: px, y: py, vx: dx / dist * sp + (Math.random() - .5) * .25, vy: dy / dist * sp - .12 - Math.random() * .18,
+          s: .9 + Math.random() * 1.6, d: dist / 2.2 * Math.random() * .5,
+          c: Math.random() < .7 ? `rgb(${d[i]},${d[i + 1]},${d[i + 2]})` : specks[Math.floor(Math.random() * specks.length)] });
+      }
+      burst = { parts, t0: performance.now() };
+      window.vouchHeroRestart?.();
+      requestAnimationFrame(boom);
+    }
+
+    function boom(now) {
+      const t = now - burst.t0, DUR = 2300;   // an unhurried burst
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      // the background fades away underneath the dust, revealing the page
+      const bg = 1 - Math.min(1, Math.max(0, (t - 300) / 1300));
+      if (bg > 0) { ctx.globalAlpha = bg; ctx.fillStyle = cssVar('--paper'); ctx.fillRect(0, 0, W, H); }
+      for (const p of burst.parts) {
+        const tt = Math.max(0, t - p.d), k = tt / DUR; if (k >= 1) continue;
+        const e = 1 - Math.pow(1 - Math.min(1, k), 2);   // fast out, then drifting
+        ctx.globalAlpha = Math.max(0, 1 - Math.pow(k, 1.4));
+        ctx.fillStyle = p.c; ctx.fillRect(p.x + p.vx * 825 * e, p.y + p.vy * 825 * e, p.s, p.s);   // the same drift, just slower
+      }
+      ctx.globalAlpha = 1;
+      if (t < DUR + 500) requestAnimationFrame(boom);
+      else { wrap.remove(); document.body.classList.remove('welcoming'); const m = document.querySelector('main'); m.tabIndex = -1; m.focus({ preventScroll: true }); }   // keyboard and screen readers carry on from the page, without opening the phone keyboard
+    }
+
+    btn.addEventListener('click', go);
+    addEventListener('resize', () => { if (!burst) size(); });
+    size();
+    (document.fonts?.load ? Promise.all([document.fonts.load('400 40px "Instrument Serif"'), document.fonts.load('italic 400 40px "Instrument Serif"')]).catch(() => {}) : Promise.resolve())
+      .then(() => { raf = requestAnimationFrame(idle); });
+  })();
+</script>
+</body>
+</html>

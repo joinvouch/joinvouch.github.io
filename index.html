@@ -54,6 +54,8 @@
   form { display: flex; flex-direction: column; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
   label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
   label small { font-weight: 400; color: var(--muted); }
+  input[type=date] { min-height: 50px; text-align: left; }
+  input[type=date]::-webkit-date-and-time-value { text-align: left; }
   input, select { font: 500 16px Manrope, system-ui, sans-serif; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; appearance: none; }
   select { background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
            background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 36px; }
@@ -114,8 +116,8 @@
     <label>Email
       <input name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required>
     </label>
-    <label>Instagram or phone <small>Optional</small>
-      <input name="contact" autocomplete="off" maxlength="60" placeholder="@yourname or 07…">
+    <label>Date of birth <small>Vouch is for people aged 18 and over</small>
+      <input name="dob" type="date" autocomplete="bday" min="1900-01-01" required>
     </label>
     <label>Where do you live?
       <select name="area" required>
@@ -141,7 +143,7 @@
     </label>
     <details class="privacy">
       <summary>How we use your details</summary>
-      <p>We keep your first name, email, region and, if you add it, your Instagram or phone number. We use them only to invite you to join Vouch when we open, and never sell or share them.</p>
+      <p>We keep your first name, email, date of birth and region. We use them only to invite you to join Vouch when we open (your date of birth confirms you’re 18 or over), and never sell or share them.</p>
       <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after we invite you, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
       <p>To stop scripts filling the list, we keep a scrambled code for your internet connection for one day, then delete it.</p>
     </details>
@@ -163,14 +165,19 @@
   const SUPABASE_URL = 'https://qkhnykxluieehapdsedl.supabase.co';
   const PUBLISHABLE_KEY = 'sb_publishable_x5P4yNB16l2d_UGiGfPj0A_ebnCsJJD';
 
+  // The latest date of birth that's 18 today (YYYY-MM-DD): the date picker stops there too.
+  const adultCutoff = () => { const d = new Date(); d.setFullYear(d.getFullYear() - 18); return d.toISOString().slice(0, 10); };
+  document.querySelector('[name=dob]').max = adultCutoff();
   const form = document.getElementById('form'), error = document.getElementById('error'), send = document.getElementById('send');
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(form));
-    const name = (f.name || '').trim(), email = (f.email || '').trim(), contact = (f.contact || '').trim(), area = f.area || '';
+    const name = (f.name || '').trim(), email = (f.email || '').trim(), dob = f.dob || '', area = f.area || '';
     error.textContent = '';
     if (!name) return error.textContent = 'Add your first name.';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return error.textContent = 'Add an email address we can reach you on.';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return error.textContent = 'Add your date of birth.';
+    if (dob > adultCutoff()) return error.textContent = 'Vouch is for people aged 18 and over.';
     if (!area) return error.textContent = 'Choose where you live.';
     if (!f.consent) return error.textContent = 'Tick the box so we can contact you when we open.';
     send.disabled = true; send.textContent = 'Sending…';
@@ -178,7 +185,7 @@
       const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_interest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: PUBLISHABLE_KEY },
-        body: JSON.stringify({ name, email, contact: contact || null, area, website: f.website || null }),
+        body: JSON.stringify({ name, email, area, dob, website: f.website || null }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));

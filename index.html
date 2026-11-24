@@ -60,6 +60,11 @@
   input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
   .consent { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 500; font-size: 13px; line-height: 1.45; color: var(--muted); }
   .consent input { width: 20px; height: 20px; flex: none; margin: 1px 0 0; appearance: auto; accent-color: var(--accent); }
+  /* A box people never see: bots that fill in every field fill this in too, and nothing is saved. */
+  .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+  .privacy { font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .privacy summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+  .privacy p { margin: 8px 0 0; }
   button { font: 700 15px Manrope, system-ui, sans-serif; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 999px; padding: 15px; cursor: pointer; }
   button:disabled { opacity: .6; cursor: default; }
   .error { color: var(--warn); font-size: 13px; min-height: 1em; margin: -4px 0 0; }
@@ -76,6 +81,10 @@
   .welcome button { position: absolute; width: 120px; height: 120px; border-radius: 50%; transform: translate(-50%, -50%); background: transparent; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .welcome button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
   body.welcoming { overflow: hidden; }
+  /* The intro covers the screen down to the browser's toolbar, but on iPhone the page carries on behind the toolbar:
+     keep the form out of sight until the greeting bursts, then fade it in as the dust clears. */
+  body.welcoming main { opacity: 0; }
+  body.welcoming.revealing main { opacity: 1; transition: opacity 1.3s ease .3s; }
   main:focus { outline: none; }
 </style>
 </head>
@@ -126,9 +135,16 @@
         <option>Somewhere else</option>
       </select>
     </label>
+    <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
     <label class="consent"><input type="checkbox" name="consent" required>
       <span>I’m happy for Vouch to contact me about joining. We only use your details for this, and you can ask us to delete them at any time.</span>
     </label>
+    <details class="privacy">
+      <summary>How we use your details</summary>
+      <p>We keep your first name, email, region and, if you add it, your Instagram or phone number. We use them only to invite you to join Vouch when we open, and never sell or share them.</p>
+      <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after we invite you, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
+      <p>To stop scripts filling the list, we keep a scrambled code for your internet connection for one day, then delete it.</p>
+    </details>
     <p class="error" id="error" role="alert"></p>
     <button id="send" type="submit">Register my interest</button>
   </form>
@@ -162,7 +178,7 @@
       const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_interest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: PUBLISHABLE_KEY },
-        body: JSON.stringify({ name, email, contact: contact || null, area }),
+        body: JSON.stringify({ name, email, contact: contact || null, area, website: f.website || null }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -345,6 +361,7 @@
           c: Math.random() < .7 ? `rgb(${d[i]},${d[i + 1]},${d[i + 2]})` : specks[Math.floor(Math.random() * specks.length)] });
       }
       burst = { parts, t0: performance.now() };
+      document.body.classList.add('revealing');
       window.vouchHeroRestart?.();
       requestAnimationFrame(boom);
     }

@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vouch · Register your interest</title>
-<meta name="description" content="Invite-only dating for men, trans men and non-binary people across the UK. Register your interest and we’ll invite you when it opens.">
+<meta name="description" content="Invite-only dating for men, trans men and non-binary people across the UK. Register your interest in Vouch.">
 <!-- How the link looks when shared (WhatsApp, iMessage, X, Facebook, LinkedIn): share.png, at the page's address
      https://joinvouch.github.io (GitHub Pages, repository joinvouch/joinvouch.github.io). -->
 <meta property="og:type" content="website">
@@ -101,7 +101,7 @@
     <h1 class="wordmark">VOUCH</h1>
   </div>
   <h2 class="hero"><span class="sr">Real people, real connections. Hear the person, not just the profile. Every connection starts with a voice.</span><canvas id="hero" aria-hidden="true"></canvas></h2>
-  <p class="lede">An invite-only dating app for men, trans men and non-binary people, where every member is vouched for by someone who knows them. Leave your details and we’ll invite you to sign up when we open.</p>
+  <p class="lede">An invite-only dating app for men, trans men and non-binary people, where every member is vouched for by someone who knows them. Register your interest and we’ll email you when registration opens.</p>
 
   <ul class="points">
     <li>Every member passes an ID check and is vouched for by friends</li>
@@ -139,12 +139,12 @@
     </label>
     <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
     <label class="consent"><input type="checkbox" name="consent" required>
-      <span>I’m happy for Vouch to contact me about joining. We only use your details for this, and you can ask us to delete them at any time.</span>
+      <span>I agree to Vouch keeping my details to register my interest and emailing me when registration opens. I can ask for them to be deleted at any time.</span>
     </label>
     <details class="privacy">
       <summary>How we use your details</summary>
-      <p>We keep your first name, email, date of birth and region. We use them only to invite you to join Vouch when we open (your date of birth confirms you’re 18 or over), and never sell or share them.</p>
-      <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after we invite you, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
+      <p>This is to register your interest in Vouch. We keep your first name, email, date of birth and region, and use them only for that: to know who’s interested and where, and to email you when registration opens. Your date of birth confirms you’re 18 or over. We never sell or share your details.</p>
+      <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after registration opens, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
       <p>To stop scripts filling the list, we keep a scrambled code for your internet connection for one day, then delete it.</p>
     </details>
     <p class="error" id="error" role="alert"></p>
@@ -154,7 +154,7 @@
   <div class="done" id="done" hidden>
     <span class="tick">✓</span>
     <h2>You’re on the list</h2>
-    <p class="lede">Thanks, <span id="who"></span>. We’ll email you an invite to sign up as soon as Vouch opens.</p>
+    <p class="lede">Thanks, <span id="who"></span>. <span id="next">We’ll email you as soon as registration opens.</span></p>
   </div>
 
   <footer>© Vouch 2026</footer>
@@ -169,6 +169,7 @@
   const adultCutoff = () => { const d = new Date(); d.setFullYear(d.getFullYear() - 18); return d.toISOString().slice(0, 10); };
   document.querySelector('[name=dob]').max = adultCutoff();
   const form = document.getElementById('form'), error = document.getElementById('error'), send = document.getElementById('send');
+  form.addEventListener('change', () => { error.textContent = ''; });   // a fixed mistake clears its message
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(form));
@@ -179,7 +180,7 @@
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return error.textContent = 'Add your date of birth.';
     if (dob > adultCutoff()) return error.textContent = 'Vouch is for people aged 18 and over.';
     if (!area) return error.textContent = 'Choose where you live.';
-    if (!f.consent) return error.textContent = 'Tick the box so we can contact you when we open.';
+    if (!f.consent) return error.textContent = 'Tick the box to agree to us keeping your details.';
     send.disabled = true; send.textContent = 'Sending…';
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_interest`, {

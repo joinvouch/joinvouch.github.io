@@ -7,13 +7,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vouch · Register your interest</title>
-<meta name="description" content="Invite-only dating for men, trans men and non-binary people across the UK. Register your interest in Vouch.">
+<meta name="description" content="Invite-only dating for everyone across the UK. Register your interest in Vouch.">
 <!-- How the link looks when shared (WhatsApp, iMessage, X, Facebook, LinkedIn): share.png, at the page's address
      https://joinvouch.github.io (GitHub Pages, repository joinvouch/joinvouch.github.io). -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vouch">
 <meta property="og:title" content="Vouch · Register your interest">
-<meta property="og:description" content="Invite-only dating for men, trans men and non-binary people across the UK. Every member ID-checked and vouched for. Every connection starts with a voice.">
+<meta property="og:description" content="Invite-only dating for everyone across the UK. Every member ID-checked and vouched for. Every connection starts with a voice.">
 <meta property="og:url" content="https://joinvouch.github.io/">
 <meta property="og:image" content="https://joinvouch.github.io/share.png">
 <meta property="og:image:width" content="1200">
@@ -101,7 +101,7 @@
     <h1 class="wordmark">VOUCH</h1>
   </div>
   <h2 class="hero"><span class="sr">Real people, real connections. Hear the person, not just the profile. Every connection starts with a voice.</span><canvas id="hero" aria-hidden="true"></canvas></h2>
-  <p class="lede">An invite-only dating app for men, trans men and non-binary people, where every member is vouched for by someone who knows them. Register your interest and we’ll email you when registration opens.</p>
+  <p class="lede">An invite-only dating app for everyone across the UK, where every member is vouched for by someone who knows them. Register your interest and we’ll email you when registration opens.</p>
 
   <ul class="points">
     <li>Every member passes an ID check and is vouched for by friends</li>
@@ -118,6 +118,18 @@
     </label>
     <label>Date of birth <small>Vouch is for people aged 18 and over</small>
       <input name="dob" type="date" autocomplete="bday" min="1900-01-01" required>
+    </label>
+    <label>I am… <small>Optional. It helps us invite a good mix of people</small>
+      <select name="gender">
+        <option value="" selected>Choose one</option>
+        <option>Man</option>
+        <option>Woman</option>
+        <option>Trans man</option>
+        <option>Trans woman</option>
+        <option>Non-binary</option>
+        <option>Another identity</option>
+        <option>Prefer not to say</option>
+      </select>
     </label>
     <label>Where do you live?
       <select name="area" required>
@@ -143,7 +155,7 @@
     </label>
     <details class="privacy">
       <summary>How we use your details</summary>
-      <p>This is to register your interest in Vouch. We keep your first name, email, date of birth and region, and use them only for that: to know who’s interested and where, and to email you when registration opens. Your date of birth confirms you’re 18 or over. We never sell or share your details.</p>
+      <p>This is to register your interest in Vouch. We keep your first name, email, date of birth, region and, if you tell us, your gender, and use them only for that: to know who’s interested and where, and to email you when registration opens. Your date of birth confirms you’re 18 or over. Your gender only helps us invite a good mix of people, and you can leave it blank. We never sell or share your details.</p>
       <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after registration opens, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
       <p>To stop scripts filling the list, we keep a scrambled code for your internet connection for one day, then delete it.</p>
     </details>
@@ -186,7 +198,7 @@
       const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_interest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: PUBLISHABLE_KEY },
-        body: JSON.stringify({ name, email, area, dob, website: f.website || null }),
+        body: JSON.stringify({ name, email, area, dob, website: f.website || null, gender: f.gender || null }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));

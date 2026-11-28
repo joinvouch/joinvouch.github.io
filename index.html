@@ -7,18 +7,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vouch · Register your interest</title>
-<meta name="description" content="Invite-only dating for everyone across the UK. Register your interest in Vouch.">
+<meta name="description" content="The dating app where friends vouch for you. Invite-only, for everyone across the UK. Register your interest in Vouch.">
 <!-- How the link looks when shared (WhatsApp, iMessage, X, Facebook, LinkedIn): share.png, at the page's address
      https://joinvouch.github.io (GitHub Pages, repository joinvouch/joinvouch.github.io). -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vouch">
 <meta property="og:title" content="Vouch · Register your interest">
-<meta property="og:description" content="Invite-only dating for everyone across the UK. Every member ID-checked and vouched for. Every connection starts with a voice.">
+<meta property="og:description" content="The dating app where friends vouch for you. Invite-only, for everyone across the UK: every member ID-checked and vouched for, and you hear someone before you meet.">
 <meta property="og:url" content="https://joinvouch.github.io/">
 <meta property="og:image" content="https://joinvouch.github.io/share.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="VOUCH. Every connection starts with a voice.">
+<meta property="og:image:alt" content="VOUCH. Hear someone before you meet them.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://joinvouch.github.io/share.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -39,7 +39,13 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: Manrope, system-ui, sans-serif; }
   body { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; padding: 0 16px; }
-  main { width: 100%; max-width: 420px; padding: max(48px, env(safe-area-inset-top)) 0 max(32px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 22px; }
+  main { width: 100%; max-width: 420px; padding: max(40px, env(safe-area-inset-top)) 0 max(32px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 22px; }
+  .intro { display: flex; flex-direction: column; gap: 18px; }
+  /* the headline says what Vouch is, in words a screen reader and a search engine can read */
+  .headline { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(38px, 10vw, 58px); line-height: 1.02; letter-spacing: -.01em; margin: 0; text-align: center; text-wrap: balance; }
+  .headline em { font-style: italic; color: var(--accent); }
+  .brand { font-family: 'Instrument Serif', serif; font-size: 22px; letter-spacing: .32em; padding-left: .32em; margin: 0; text-align: center; color: var(--ink); }
+  .note { font-size: 13px; color: var(--muted); text-align: center; }
   /* The wordmark: Instrument Serif has one weight, so the heading must not be bold (the browser would fake it), and 18% letter spacing, as in the app. */
   .wordmark { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: min(64px, 15vw); line-height: .9; letter-spacing: .18em; padding-left: .18em; margin: 0; text-align: center; }
   .eyebrow { font: 500 10.5px 'JetBrains Mono', monospace; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); text-align: center; margin: 0; }
@@ -50,10 +56,10 @@
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   p { margin: 0; line-height: 1.5; }
-  .lede { color: var(--muted); font-size: 15px; text-align: center; }
+  .lede { color: var(--muted); font-size: 16px; text-align: center; }
   form { display: flex; flex-direction: column; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
   label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
-  label small { font-weight: 400; color: var(--muted); }
+  label small { font-weight: 400; font-size: 12.5px; color: var(--muted); }
   input[type=date] { min-height: 50px; text-align: left; }
   input[type=date]::-webkit-date-and-time-value { text-align: left; }
   input, select { font: 500 16px Manrope, system-ui, sans-serif; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; appearance: none; }
@@ -72,9 +78,44 @@
   .error { color: var(--warn); font-size: 13px; min-height: 1em; margin: -4px 0 0; }
   .done { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px 20px; display: flex; flex-direction: column; gap: 10px; }
   .done .tick { font-size: 34px; color: var(--accent); }
-  .points { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-  .points li { display: flex; gap: 10px; align-items: baseline; }
-  .points li::before { content: '✦'; color: var(--accent); font-size: 11px; }
+  /* the three reasons: a short name, then the one detail that makes it true */
+  .points { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .points li { display: flex; flex-direction: column; gap: 2px; padding: 13px 16px; background: var(--card); font-size: 14px; line-height: 1.45; color: var(--muted); }
+  .points b { font-weight: 700; color: var(--ink); font-size: 14.5px; }
+  button:focus-visible, summary:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* The app itself, on a phone: today's pick, as members see it (the app's own card) */
+  .preview { margin: 0; display: flex; justify-content: center; }
+  .phone { width: 272px; border-radius: 46px; padding: 10px; background: #1C1F1D; box-shadow: 0 2px 4px rgba(46,40,16,.1), 0 30px 60px -20px rgba(46,40,16,.45); }
+  .screen { border-radius: 37px; background: radial-gradient(120% 70% at 50% 0%, #F6FBF8 0%, #EEF6F2 55%, #E3EFE9 100%); color: #2E2810; padding: 26px 14px 14px; display: flex; flex-direction: column; gap: 12px; font-family: Manrope, system-ui, sans-serif; }
+  .s-head b { display: block; font: 400 30px/1 'Instrument Serif', serif; }
+  .s-head span { font-size: 10.5px; color: #5C5843; }
+  .s-card { border-radius: 22px; background: #FAFDFB; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 10px rgba(46,40,16,.10), 0 24px 48px -12px rgba(46,40,16,.3); }
+  .s-top { display: flex; justify-content: space-between; font: 500 8.5px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #5C5843; }
+  .s-name { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font: 400 30px/1 'Instrument Serif', serif; }
+  .s-pill { display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 6px 0 2px; border-radius: 9px; background: #F5E7C4; border: 1px solid rgba(212,167,63,.55); font: 700 8.5px Manrope, sans-serif; color: #5C4310; }
+  .s-pill i { width: 12px; height: 12px; border-radius: 50%; background: #D4A73F; color: #3B2A0B; display: grid; place-items: center; font: normal 400 8px 'Instrument Serif', serif; }
+  .s-meta { font-size: 11px; color: #5C5843; margin-top: -4px; }
+  .s-why { border-radius: 14px; background: #EEF6F2; padding: 10px 11px; display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
+  .s-why > span { font: 500 8px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #5C5843; }
+  .s-why p { display: flex; gap: 7px; align-items: center; line-height: 1.3; }
+  .s-why p::before { content: '✓'; flex: none; width: 15px; height: 15px; border-radius: 50%; background: #4B421B; color: #D7EAE2; display: grid; place-items: center; font: 700 8.5px Manrope, sans-serif; }
+  .s-quote { font: italic 400 15px/1.3 'Instrument Serif', serif; }
+  .s-quote small { display: block; margin-top: 4px; font: 400 9.5px Manrope, sans-serif; color: #5C5843; }
+  .s-actions { display: flex; gap: 8px; align-items: center; }
+  .s-actions span:first-child { flex: none; width: 44px; height: 44px; border-radius: 50%; background: rgba(250,253,251,.8); display: grid; place-items: center; color: #5C5843; font-size: 16px; box-shadow: 0 10px 22px -10px rgba(46,40,16,.3); }
+  .s-actions span:last-child { flex: 1; height: 44px; border-radius: 22px; background: #4B421B; color: #D7EAE2; display: grid; place-items: center; font: 600 12px Manrope, sans-serif; box-shadow: 0 6px 16px -8px rgba(46,40,16,.45); }
+  /* Wide screens: the words and the form on the left, the app on the right, both inside the same two edges */
+  @media (min-width: 960px) {
+    main { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 1fr); column-gap: 72px; align-items: start; padding-top: 64px; }
+    main > * { grid-column: 1; }
+    .preview { grid-column: 2; grid-row: 1 / span 3; position: sticky; top: 48px; justify-content: flex-end; }
+    .phone { width: 340px; }
+    .hero { height: 64px; }
+    .brand, .headline, .lede, .note { text-align: left; }
+    .brand { padding-left: 0; }
+    .hero { width: 100%; margin-left: 0; }
+    footer { grid-column: 1 / -1; }
+  }
   footer { text-align: center; color: var(--muted); font-size: 12px; }
   [hidden] { display: none !important; }
   /* Welcome in: a full-screen greeting with a microphone. Tapping it bursts the greeting into dust and reveals the page. */
@@ -82,6 +123,8 @@
   .welcome canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .welcome button { position: absolute; width: 120px; height: 120px; border-radius: 50%; transform: translate(-50%, -50%); background: transparent; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .welcome button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+  .welcome #welcome-skip { width: auto; height: 44px; top: max(16px, env(safe-area-inset-top)); right: 12px; left: auto; transform: none; border-radius: 22px; padding: 0 16px;
+    background: transparent; color: var(--muted); font: 600 14px Manrope, system-ui, sans-serif; }
   body.welcoming { overflow: hidden; }
   /* The intro covers the screen down to the browser's toolbar, but on iPhone the page carries on behind the toolbar:
      keep the form out of sight until the greeting bursts, then fade it in as the dust clears. */
@@ -95,19 +138,37 @@
   <canvas id="welcome-canvas" aria-hidden="true"></canvas>
   <h1 class="sr">Welcome in</h1>
   <button id="welcome-mic" type="button" aria-label="Welcome in. Tap the microphone to come in"></button>
+  <button id="welcome-skip" type="button">Skip</button>
 </div>
 <main>
-  <div>
-    <h1 class="wordmark">VOUCH</h1>
+  <div class="intro">
+    <p class="brand" aria-hidden="true">VOUCH</p>
+    <h1 class="headline">The dating app where <em>friends vouch</em> for&nbsp;you</h1>
+    <div class="hero"><span class="sr">Hear someone before you meet them. Vouched for by people who know them. A few good picks a day.</span><canvas id="hero" aria-hidden="true"></canvas></div>
+    <p class="lede">Invite-only, for everyone across the UK. Register your interest and we’ll email you when registration opens.</p>
   </div>
-  <h2 class="hero"><span class="sr">Real people, real connections. Hear the person, not just the profile. Every connection starts with a voice.</span><canvas id="hero" aria-hidden="true"></canvas></h2>
-  <p class="lede">An invite-only dating app for everyone across the UK, where every member is vouched for by someone who knows them. Register your interest and we’ll email you when registration opens.</p>
 
   <ul class="points">
-    <li>Every member passes an ID check and is vouched for by friends</li>
-    <li>Conversations start with a voice, not just a profile</li>
-    <li>Places are limited each month</li>
+    <li><b>Vouched for by friends</b>People who know each member say who they are, in their own words.</li>
+    <li><b>ID-checked</b>Every member passes an ID check before they join.</li>
+    <li><b>You hear them first</b>Openers are voice notes, so you hear someone before you meet them.</li>
   </ul>
+
+  <figure class="preview" role="img" aria-label="Vouch on a phone: one of today’s picks, Daniel, 31, with why you two were picked, a friend’s words about him, and the button to hold and send him an opener.">
+    <div class="phone" aria-hidden="true"><div class="screen">
+      <div class="s-head"><b>Today</b><span>3 picks · 3 openers left until Monday</span></div>
+      <div class="s-card">
+        <div class="s-top"><span>Picked for you today</span><span>1 mi away</span></div>
+        <div class="s-name">Daniel, 31 <span class="s-pill"><i>V</i>Reserve</span></div>
+        <div class="s-meta">Creative director · Shoreditch · ✓ ID-checked</div>
+        <div class="s-why"><span>Why you two</span><p>Both looking for long-term</p><p>Both open to children</p><p>Vouched for by 2 people who know him</p></div>
+        <p class="s-quote">“Daniel is the friend who turns up with soup before you’ve said you’re ill.”<small>Hannah R., who vouched for Daniel</small></p>
+      </div>
+      <div class="s-actions"><span>✕</span><span>Hold to send an opener</span></div>
+    </div></div>
+  </figure>
+
+  <p class="note">Places are limited each month.</p>
 
   <form id="form" novalidate>
     <label>Your first name
@@ -157,7 +218,7 @@
       <summary>How we use your details</summary>
       <p>This is to register your interest in Vouch. We keep your first name, email, date of birth, region and, if you tell us, your gender, and use them only for that: to know who’s interested and where, and to email you when registration opens. Your date of birth confirms you’re 18 or over. Your gender only helps us invite a good mix of people, and you can leave it blank. We never sell or share your details.</p>
       <p>They’re stored securely in the UK by our database provider. We keep them for up to 12 months after registration opens, or until you ask us to delete them, whichever comes first. To see or delete your details, reply to any email we send you, or message us on Instagram or TikTok.</p>
-      <p>To stop scripts filling the list, we keep a scrambled code for your internet connection for one day, then delete it.</p>
+      <p>To stop scripts filling the list, we keep a scrambled code made from your internet address for one day, then delete it.</p>
     </details>
     <p class="error" id="error" role="alert"></p>
     <button id="send" type="submit">Register my interest</button>
@@ -208,7 +269,7 @@
       form.hidden = true;
       document.getElementById('done').hidden = false;
     } catch (err) {
-      error.textContent = err.message === 'Failed to fetch' ? 'Couldn’t connect. Check your internet and try again.' : err.message;
+      error.textContent = err.message === 'Failed to fetch' ? 'Couldn’t reach Vouch. Check your internet and try again.' : err.message;
       send.disabled = false; send.textContent = 'Register my interest';
     }
   });
@@ -218,9 +279,9 @@
   // out to the right edge. Text colours come from the page's colours, so it follows light and dark mode.
   (() => {
     const LINES = [
-      [['Real people, real connections.', false]],
-      [['Hear the person, not just the profile.', false]],
-      [['Every connection starts with ', false], ['a voice.', true]],
+      [['Hear someone ', false], ['before you meet.', true]],
+      [['Vouched for by people ', false], ['who know them.', true]],
+      [['A few good picks ', false], ['a day.', true]],
     ];
     const SPECKS = { light: ['#4B421B', '#6B5F2A', '#8C7F45', '#A9C9BB', '#5E7A6E'], dark: ['#D7EAE2', '#F0DC9A', '#A9C9BB', '#5E7A6E', '#EEF6F2'] };
     const PERIOD = 5000, FORM = 1700, OUT = 1700;   // ms: a line every 5 seconds
@@ -231,6 +292,7 @@
     const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
     const rnd = (a, b) => a + Math.random() * (b - a);
     const easeOut = k => 1 - Math.pow(1 - k, 3), easeIn = k => k * k * k;
+    const leftAligned = () => matchMedia('(min-width: 960px)').matches;
 
     // Lay a line out (wrapping onto two rows if it's too wide), draw it off-screen, and turn its pixels into dust.
     function build(line) {
@@ -252,7 +314,7 @@
       const ink = cssVar('--ink'), accent = cssVar('--accent');
       const top = H / 2 - (rows.length - 1) * lh / 2;
       rows.forEach((row, i) => {
-        const total = row.reduce((a, [, , ww]) => a + ww, 0); let x = (W - total) / 2;
+        const total = row.reduce((a, [, , ww]) => a + ww, 0); let x = leftAligned() ? 0 : (W - total) / 2;   // left on wide screens, with the headline
         row.forEach(([w, em, ww]) => { c.font = font(em, size); c.fillStyle = em ? accent : ink; c.fillText(w, x, top + i * lh); x += ww; });
       });
       const data = c.getImageData(0, 0, off.width, off.height).data, step = Math.max(2, Math.round(2 * dpr)), out = [];
@@ -314,6 +376,13 @@
   // Enter) and everything on it bursts outwards as dust while the background fades, revealing the register page.
   (() => {
     const wrap = document.getElementById('welcome'), canvas = document.getElementById('welcome-canvas'), btn = document.getElementById('welcome-mic');
+    // Only the first visit: once you've come in (or skipped), the page opens straight away.
+    const SEEN = 'vouch-welcomed';
+    const remember = () => { try { localStorage.setItem(SEEN, '1'); } catch (e) { /* private browsing */ } };
+    const finish = () => { wrap.remove(); document.body.classList.remove('welcoming', 'revealing'); window.vouchHeroRestart?.(); const m = document.querySelector('main'); m.tabIndex = -1; m.focus({ preventScroll: true }); };
+    let seen = false; try { seen = localStorage.getItem(SEEN) === '1'; } catch (e) { /* private browsing */ }
+    if (seen) return finish();
+    document.getElementById('welcome-skip').addEventListener('click', () => { remember(); cancelAnimationFrame(raf); finish(); });
     const ctx = canvas.getContext('2d'), dark = matchMedia('(prefers-color-scheme: dark)');
     const SPECKS = { light: ['#4B421B', '#6B5F2A', '#8C7F45', '#A9C9BB', '#5E7A6E'], dark: ['#D7EAE2', '#F0DC9A', '#A9C9BB', '#5E7A6E', '#EEF6F2'] };
     const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -380,7 +449,7 @@
           s: .9 + Math.random() * 1.6, d: dist / 2.2 * Math.random() * .5,
           c: Math.random() < .7 ? `rgb(${d[i]},${d[i + 1]},${d[i + 2]})` : specks[Math.floor(Math.random() * specks.length)] });
       }
-      burst = { parts, t0: performance.now() };
+      burst = { parts, t0: performance.now() }; remember();
       document.body.classList.add('revealing');
       window.vouchHeroRestart?.();
       requestAnimationFrame(boom);
